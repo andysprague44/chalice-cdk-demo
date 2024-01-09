@@ -1,0 +1,42 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/anaconda
+{
+	"name": "chalice-cdk-demo",
+	
+	// "image": "python:3.9.18-bookworm",
+	"build": { 
+		"context": "..",
+		"dockerfile": "Dockerfile"
+	},
+
+	"containerEnv": {
+		"AWS_PROFILE": "andysprague44",
+		"AWS_REGION": "us-east-1"
+	},
+
+	//Use AWS credentials from host machine
+	"mounts": [
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws/credentials,target=/root/.aws/credentials,type=bind"
+	],
+	
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Boto3typed.boto3-ide",
+				"ms-python.python",
+				"ms-python.black-formatter",
+				"amazonwebservices.aws-toolkit-vscode",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"eamodio.gitlens"
+			]
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root"
+}

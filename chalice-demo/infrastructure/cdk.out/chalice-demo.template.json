@@ -1,0 +1,598 @@
+{
+ "Transform": "AWS::Serverless-2016-10-31",
+ "AWSTemplateFormatVersion": "2010-09-09",
+ "Resources": {
+  "AppTable815C50BC": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "PK",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "SK",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "PK",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "SK",
+      "KeyType": "RANGE"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "chalice-demo/AppTable/Resource"
+   }
+  },
+  "DefaultRole": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Sid": "",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       },
+       "Action": "sts:AssumeRole"
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Resource": "arn:*:logs:*:*:*"
+        }
+       ]
+      },
+      "PolicyName": "DefaultRolePolicy"
+     }
+    ]
+   }
+  },
+  "APIHandler": {
+   "Type": "AWS::Serverless::Function",
+   "Properties": {
+    "CodeUri": {
+     "Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "Key": "13f4d06980a4806a81c3bdf61ec2cc6b9d83a030c64be3c1326b03538e3ae62b.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "APP_TABLE_NAME": {
+       "Ref": "AppTable815C50BC"
+      }
+     }
+    },
+    "Handler": "app.app",
+    "MemorySize": 128,
+    "Role": {
+     "Fn::GetAtt": [
+      "DefaultRole",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Tags": {
+     "aws-chalice": "version=1.30.0:stage=chalice-demo:app=chalice-demo"
+    },
+    "Timeout": 60,
+    "Tracing": "PassThrough"
+   }
+  },
+  "RestAPI": {
+   "Type": "AWS::Serverless::Api",
+   "Properties": {
+    "DefinitionBody": {
+     "swagger": "2.0",
+     "info": {
+      "version": "1.0",
+      "title": "chalice-demo"
+     },
+     "schemes": [
+      "https"
+     ],
+     "paths": {
+      "/users": {
+       "post": {
+        "consumes": [
+         "application/json"
+        ],
+        "produces": [
+         "application/json"
+        ],
+        "responses": {
+         "200": {
+          "description": "200 response",
+          "schema": {
+           "$ref": "#/definitions/Empty"
+          }
+         }
+        },
+        "x-amazon-apigateway-integration": {
+         "responses": {
+          "default": {
+           "statusCode": "200"
+          }
+         },
+         "uri": {
+          "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${APIHandler.Arn}/invocations"
+         },
+         "passthroughBehavior": "when_no_match",
+         "httpMethod": "POST",
+         "contentHandling": "CONVERT_TO_TEXT",
+         "type": "aws_proxy"
+        }
+       }
+      },
+      "/users/{username}": {
+       "get": {
+        "consumes": [
+         "application/json"
+        ],
+        "produces": [
+         "application/json"
+        ],
+        "responses": {
+         "200": {
+          "description": "200 response",
+          "schema": {
+           "$ref": "#/definitions/Empty"
+          }
+         }
+        },
+        "x-amazon-apigateway-integration": {
+         "responses": {
+          "default": {
+           "statusCode": "200"
+          }
+         },
+         "uri": {
+          "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${APIHandler.Arn}/invocations"
+         },
+         "passthroughBehavior": "when_no_match",
+         "httpMethod": "POST",
+         "contentHandling": "CONVERT_TO_TEXT",
+         "type": "aws_proxy"
+        },
+        "parameters": [
+         {
+          "name": "username",
+          "in": "path",
+          "required": true,
+          "type": "string"
+         }
+        ]
+       }
+      }
+     },
+     "definitions": {
+      "Empty": {
+       "type": "object",
+       "title": "Empty Schema"
+      }
+     },
+     "x-amazon-apigateway-binary-media-types": [
+      "application/octet-stream",
+      "application/x-tar",
+      "application/zip",
+      "audio/basic",
+      "audio/ogg",
+      "audio/mp4",
+      "audio/mpeg",
+      "audio/wav",
+      "audio/webm",
+      "image/png",
+      "image/jpg",
+      "image/jpeg",
+      "image/gif",
+      "video/ogg",
+      "video/mpeg",
+      "video/webm"
+     ]
+    },
+    "EndpointConfiguration": "EDGE",
+    "StageName": "api"
+   }
+  },
+  "APIHandlerInvokePermission": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Ref": "APIHandler"
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Sub": [
+      "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${RestAPIId}/*",
+      {
+       "RestAPIId": {
+        "Ref": "RestAPI"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ChaliceAppDefaultRolePolicyCAAAC186": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AppTable815C50BC",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ChaliceAppDefaultRolePolicyCAAAC186",
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "DefaultRole",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "chalice-demo/ChaliceApp/DefaultRole/Policy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02NwW6DMBBEvyX3ZVvKJT0mSJV6akR6R4tt0g1mHbG2IoT498rQQ08z0sy8ecOyPOLrgZ5aGDsUnjtcrpHMAPTUdrGz0Bhsh8s3dd5B3ctmVtCqJVUXFU9ZQCs8JzO4eCZ1wDTiUvfSBO/gEjybOW93t4L+xR9JTOQgOTs9eAVPY2cJc9VNI6tykBUapyFNZrv/SvGRImyn10g3lhsYH5LtwzRShrUsxifrMuVzt3n4H1IHsRw39mWOP0FeKnzH8ni4K3MxJYk8Omx2/QX9gknrJAEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "chalice-demo/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "AppTableName": {
+   "Value": {
+    "Ref": "AppTable815C50BC"
+   }
+  },
+  "RestAPIId": {
+   "Value": {
+    "Ref": "RestAPI"
+   }
+  },
+  "APIHandlerName": {
+   "Value": {
+    "Ref": "APIHandler"
+   }
+  },
+  "APIHandlerArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "APIHandler",
+     "Arn"
+    ]
+   }
+  },
+  "EndpointURL": {
+   "Value": {
+    "Fn::Sub": "https://${RestAPI}.execute-api.${AWS::Region}.${AWS::URLSuffix}/api/"
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

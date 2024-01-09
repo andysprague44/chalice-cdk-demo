@@ -1,0 +1,32 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "13f4d06980a4806a81c3bdf61ec2cc6b9d83a030c64be3c1326b03538e3ae62b": {
+      "source": {
+        "path": "asset.13f4d06980a4806a81c3bdf61ec2cc6b9d83a030c64be3c1326b03538e3ae62b.zip",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "13f4d06980a4806a81c3bdf61ec2cc6b9d83a030c64be3c1326b03538e3ae62b.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "4ed4a44a59134a030e2a6cff1be6abf34765244dbd004f618a34a81f3cab0e8b": {
+      "source": {
+        "path": "chalice-demo.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4ed4a44a59134a030e2a6cff1be6abf34765244dbd004f618a34a81f3cab0e8b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

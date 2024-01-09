@@ -1,0 +1,143 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "chalice-demo.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "chalice-demo.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "chalice-demo": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "chalice-demo.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4ed4a44a59134a030e2a6cff1be6abf34765244dbd004f618a34a81f3cab0e8b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "chalice-demo.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "chalice-demo.assets"
+      ],
+      "metadata": {
+        "/chalice-demo/AppTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppTable815C50BC"
+          }
+        ],
+        "/chalice-demo/AppTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppTableName"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChaliceAppA920E0AD"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/DefaultRole": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultRole"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/APIHandler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "APIHandler"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/RestAPI": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPI"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/APIHandlerInvokePermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "APIHandlerInvokePermission"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/$Ouputs/RestAPIId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIId"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/$Ouputs/APIHandlerName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "APIHandlerName"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/$Ouputs/APIHandlerArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "APIHandlerArn"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/ChaliceApp/$Ouputs/EndpointURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointURL"
+          }
+        ],
+        "/chalice-demo/ChaliceApp/DefaultRole/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChaliceAppDefaultRolePolicyCAAAC186"
+          }
+        ],
+        "/chalice-demo/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/chalice-demo/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/chalice-demo/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/chalice-demo/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "chalice-demo"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
